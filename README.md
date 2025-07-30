@@ -63,15 +63,22 @@
     - `chmod u+x add_client.sh`
 
 ## III. Configuring internet router/box and DDNS address
-...
+1. Find the Raspi's MAC address using `ifconfig -a` and noting the used device's MAC (either eth0 or wlan0 etc)
+2. Make the necessary configuration in the router/internet box's admin panel
+    - Find out how to access your router or box's web admin panel and login to it
+    - Find the DHCP configuration page and assign a static IP address to your Raspi's MAC. This is so the Raspi always gets this IP even if it is disconnected.
+    - Find the PortForwarding/NAT/Firewall configuration page and forward the 33333 port to itself (33333) for the IP address that you chose in the above step. This allows to open the internet access to the WireGuard server of the Raspi. Without this step, only people connected in the same local netword can communicate with the 33333 port of the Raspi.
+3. Create a Dynamic DNS domain name : now for outside people to communicate with the Raspi, they need to know the public IP address of the router/box. Unfortunately, this address can change often. These steps allow to set-up a domain name (example hehe.ddns.net) which always points to the correct IP address.
+    - Create a free account in [noip.com](https://noip.com), then go to "My account", then to "DDNS & Remote Access" then "DNS Records" then "Create Hostname" and choose a username, for example "orange.ddns.net".
+    - Find the Dynamic DNS configuration in your router and enable it with the noip.com credentials and domain name.
 
-## IV. Creating new clients
+## IV. Creating new clients, maintaining
 1. Creating a client:
-    - To create a new "account", from the Raspi home execute `sudo ./add_client.sh [account_new_name] 10.20.10.xxx [public_pi_address]`  where the xxx refers to an ip never used before. This will generate a file `./wireguard-clients/account_new_name.conf`, this is the file we have to give to the owner of the account.
-    - FROM THE HOST MACHINE: `scp [login]@public_address:./wireguard-clients/new_account_name.conf .` to get the file, then share the file with the client
+    - To create a new "account", from the Raspi home execute `sudo ./add_client.sh [account_new_name] 10.20.10.xxx [public_pi_ddns_domain_name]`  where the xxx refers to an ip never used before. This will generate a file `./wireguard-clients/account_new_name.conf`, this is the file we have to give to the owner of the account.
+    - FROM THE HOST MACHINE: `scp [login]@public_address:./wireguard-clients/new_account_name.conf .` to get the file, then share the file with the client.
 
-2. If a client was created with a bad configutation, it can be removed manually from
-   the /etc/wireguard/wg0.conf file
+2. If a client was created with a bad configutation, it can be removed manually in the /etc/wireguard/wg0.conf file
+3. If one switches between ethernet and wifi for the Raspi, one needs to update the second PostUp and PostDown lines in /etc/wireguard/wg0.conf accordingly (for example by replacing "eth0" with "wlan0" and vice-versa.
 
 ## V. Client-side connection
   Simply install WireGuard client for the device (Windows PC, Android smartphone, IPhone) and open the shared configuration file in it
