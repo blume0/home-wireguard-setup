@@ -19,7 +19,6 @@ echo $public_key > "$client"-publickey
 c="$client".conf
 rm $c 2>/dev/null
 
-echo "# CLIENT's $client_name CONF, ADDED ON $(date)"
 echo "[Interface]" >> $c
 echo "Address = $client_ip/24" >> $c
 echo "ListenPort = 33333" >> $c
@@ -38,6 +37,9 @@ sconf=$server_conf_dir/$server_conf_file
 cp $sconf $sconf.bak.$(date +%Y%m%d-%H%M%S)
 
 echo >> $sconf
+msg="CLIENT's $client_name CONF, ADDED ON $(date)"
+echo "# $msg" >> $sconf
+echo $msg
 echo "[Peer]" >> $sconf
 echo "AllowedIPs" "=" $client_ip >> $sconf
 echo "PublicKey" "=" $public_key >> $sconf
